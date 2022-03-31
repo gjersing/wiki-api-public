@@ -32,6 +32,8 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+
+//----- API requests targetting ALL articles -----
 app.route('/articles')
   .get((req, res) => {
     Article.find({}, function(err, foundArticles) {
@@ -64,7 +66,55 @@ app.route('/articles')
         res.send(err);
       }
     });
+  });
+
+//----- API requests targetting a SPECIFIC article -----
+app.route('/articles/:reqArticle')
+  .get((req, res) => {
+    Article.findOne({title: req.params.reqArticle}, function(err, foundArticle) {
+      if (!err) {
+        res.send(foundArticle);
+      } else {
+        res.send(err);
+      }
+    })
+
   })
+  .put((req, res) => {
+    Article.replaceOne(
+      {title: req.params.reqArticle},
+      {title: req.body.title, content: req.body.content},
+      function(err) {
+        if (!err) {
+          res.send("Successfully updated article.");
+        } else {
+          res.send(err);
+        }
+      }
+    );
+  })
+  .patch((req, res) => {
+    Article.updateOne(
+      {title: req.params.reqArticle},
+      {$set: req.body},
+      function (err){
+        if (!err) {
+          res.send("Successfully updated article.");
+        } else {
+          res.send(err);
+        }
+      }
+    );
+  })
+  .delete((req, res) => {
+    Article.deleteOne({title: req.params.reqArticle}, function(err) {
+      if (!err) {
+        res.send("Successfully deleted article.");
+      } else {
+        res.send(err);
+      }
+    })
+  });
 
 //Heroku process port. If unavailable/local then default to 3000.
 let port = process.env.PORT;
