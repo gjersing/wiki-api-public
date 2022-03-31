@@ -22,8 +22,9 @@ const articleSchema = new mongoose.Schema({
   content: String
 });
 
-// Initial schema and document test
-// const Article = mongoose.model('Article', articleSchema);
+const Article = mongoose.model('Article', articleSchema);
+
+// Initial schema and model test
 // const testArticle = new Article({title: 'WikiAPI', content: 'A RESTful API for getting article descriptions about certain full-stack tech tools, frameworks, or keywords.'});
 // testArticle.save();
 
@@ -31,6 +32,43 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// Fetches ALL articles
+app.get('/articles', (req, res) => {
+  Article.find({}, function(err, foundArticles) {
+    if (!err) {
+      res.send(foundArticles);
+    } else {
+      res.send(err);
+    }
+  });
+});
+
+// Creates ONE new article
+app.post('/articles', (req, res) => {
+
+  const newArticle = new Article({
+    title: req.body.title,
+    content: req.body.content
+  });
+
+  newArticle.save(function(err) {
+    if (!err) {
+      res.send("Successfully added a new article.");
+    } else {
+      res.send(err);
+    }
+  });
+});
+
+app.delete('/articles', (req, res) => {
+  Article.deleteMany({}, function(err) {
+    if (!err) {
+      res.send("Successfully deleted all articles.");
+    } else {
+      res.send(err);
+    }
+  })
+});
 
 //Heroku process port. If unavailable/local then default to 3000.
 let port = process.env.PORT;
