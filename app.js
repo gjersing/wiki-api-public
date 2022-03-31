@@ -32,43 +32,39 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// Fetches ALL articles
-app.get('/articles', (req, res) => {
-  Article.find({}, function(err, foundArticles) {
-    if (!err) {
-      res.send(foundArticles);
-    } else {
-      res.send(err);
-    }
-  });
-});
-
-// Creates ONE new article
-app.post('/articles', (req, res) => {
-
-  const newArticle = new Article({
-    title: req.body.title,
-    content: req.body.content
-  });
-
-  newArticle.save(function(err) {
-    if (!err) {
-      res.send("Successfully added a new article.");
-    } else {
-      res.send(err);
-    }
-  });
-});
-
-app.delete('/articles', (req, res) => {
-  Article.deleteMany({}, function(err) {
-    if (!err) {
-      res.send("Successfully deleted all articles.");
-    } else {
-      res.send(err);
-    }
+app.route('/articles')
+  .get((req, res) => {
+    Article.find({}, function(err, foundArticles) {
+      if (!err) {
+        res.send(foundArticles);
+      } else {
+        res.send(err);
+      }
+    });
   })
-});
+  .post((req, res) => {
+    const newArticle = new Article({
+      title: req.body.title,
+      content: req.body.content
+    });
+
+    newArticle.save(function(err) {
+      if (!err) {
+        res.send("Successfully added a new article.");
+      } else {
+        res.send(err);
+      }
+    });
+  })
+  .delete((req, res) => {
+    Article.deleteMany({}, function(err) {
+      if (!err) {
+        res.send("Successfully deleted all articles.");
+      } else {
+        res.send(err);
+      }
+    });
+  })
 
 //Heroku process port. If unavailable/local then default to 3000.
 let port = process.env.PORT;
